@@ -2,9 +2,11 @@ name: Deploy Frontend
 
 on:
   workflow-run:
-    workflows: Frontend unit tests
+    workflows: 
+      - Frontend unit tests
     branches: [main]
-    types: completed
+    types: 
+      - completed
 
 jobs:
   publish-to-hub:
