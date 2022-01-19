@@ -1,18 +1,24 @@
 name: Deploy Frontend
+
 on:
-  push:
-    branches:
-      - main
- 
+  workflow-run:
+    workflows: Frontend unit tests
+    branches: [main]
+    types: completed
+
 jobs:
-  build:
+  publish-to-hub:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: Publish to dockerhub
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker build -t jz23/docker_course_prod_workflow -f Dockerfile.dev .
-      - run: docker run -e CI=true jz23/docker_course_prod_workflow npm test
- 
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Running deploy script
+        run: docker build -t jz23/docker_course_prod_workflow -f Dockerfile .
+
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
  
