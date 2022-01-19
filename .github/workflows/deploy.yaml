@@ -1,4 +1,4 @@
-name: Deploy Frontend
+name: Deploy App to ElasticBeanstalk
 
 on:
   workflow-run:
@@ -23,15 +23,15 @@ jobs:
 
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
- 
-      - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v18
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-          application_name: docker-course
-          environment_name: Dockercourse-env
-          existing_bucket_name: elasticbeanstalk-us-east-1-941348794550
-          region: us-east-1
-          version_label: ${{ github.sha }}
-          deployment_package: deploy.zip
+  deploy-to-db:
+    name: Deploy to EB
+    uses: einaregilsson/beanstalk-deploy@v18
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+        application_name: docker-course
+        environment_name: Dockercourse-env
+        existing_bucket_name: elasticbeanstalk-us-east-1-941348794550
+        region: us-east-1
+        version_label: ${{ github.sha }}
+        deployment_package: deploy.zip
