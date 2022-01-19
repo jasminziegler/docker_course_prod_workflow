@@ -21,8 +21,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-          application_name: docker_course_prod_workflow
-          environment_name: Dockercourseprodworkflow-env
+          application_name: docker-course
+          environment_name: Dockercourse-env
           existing_bucket_name: elasticbeanstalk-us-east-1-941348794550
           region: us-east-1
           version_label: ${{ github.sha }}
