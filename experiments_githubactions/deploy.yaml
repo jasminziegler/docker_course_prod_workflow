@@ -1,0 +1,35 @@
+name: Deploy App to ElasticBeanstalk
+
+on:
+  workflow-run:
+    workflows: ["Frontend unit tests"]
+    branches: [main]
+    types: [completed]
+
+jobs:
+  publish-to-hub:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: Publish to dockerhub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Running deploy script
+        run: docker build -t jz23/docker_course_prod_workflow -f Dockerfile .
+
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
+  deploy-to-db:
+    name: Deploy to EB
+    uses: einaregilsson/beanstalk-deploy@v18
+    with:
+      aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+      application_name: docker-course
+      environment_name: Dockercourse-env
+      existing_bucket_name: elasticbeanstalk-us-east-1-941348794550
+      region: us-east-1
+      version_label: ${{ github.sha }}
+      deployment_package: deploy.zip
